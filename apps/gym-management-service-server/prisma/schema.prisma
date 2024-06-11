@@ -1,0 +1,65 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Subscription {
+  createdAt      DateTime  @default(now())
+  endDate        DateTime?
+  id             String    @id @default(cuid())
+  members        Member[]
+  membershipType String?
+  startDate      DateTime?
+  updatedAt      DateTime  @updatedAt
+}
+
+model Trainer {
+  classes     ClassModel[]
+  createdAt   DateTime     @default(now())
+  email       String?
+  firstName   String?
+  id          String       @id @default(cuid())
+  lastName    String?
+  phoneNumber String?
+  updatedAt   DateTime     @updatedAt
+}
+
+model ClassModel {
+  attendances Attendance[]
+  createdAt   DateTime     @default(now())
+  date        DateTime?
+  description String?
+  id          String       @id @default(cuid())
+  name        String?
+  trainer     Trainer?     @relation(fields: [trainerId], references: [id])
+  trainerId   String?
+  updatedAt   DateTime     @updatedAt
+}
+
+model Member {
+  attendances    Attendance[]
+  createdAt      DateTime      @default(now())
+  email          String?
+  firstName      String?
+  id             String        @id @default(cuid())
+  lastName       String?
+  phoneNumber    String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String?
+  updatedAt      DateTime      @updatedAt
+}
+
+model Attendance {
+  classField   ClassModel? @relation(fields: [classFieldId], references: [id])
+  classFieldId String?
+  createdAt    DateTime    @default(now())
+  date         DateTime?
+  id           String      @id @default(cuid())
+  member       Member?     @relation(fields: [memberId], references: [id])
+  memberId     String?
+  updatedAt    DateTime    @updatedAt
+}
